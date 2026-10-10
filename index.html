@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Lab Inverter Management System</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f3effa;
+            color: #29213a;
+        }
+
+        header {
+            background: #563487;
+            color: white;
+            padding: 22px;
+            text-align: center;
+        }
+
+        nav {
+            background: #38205d;
+            padding: 12px;
+            text-align: center;
+        }
+
+        nav button {
+            background: #7650a8;
+            color: white;
+            border: none;
+            padding: 11px 15px;
+            margin: 4px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        nav button:hover {
+            background: #9675c2;
+        }
+
+        main {
+            padding: 25px;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 18px;
+            margin: 20px 0;
+        }
+
+        .card, .panel {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px #00000010;
+            margin-bottom: 18px;
+        }
+
+        .card h3 {
+            color: #766d84;
+            margin-bottom: 12px;
+        }
+
+        .value {
+            font-size: 25px;
+            font-weight: bold;
+            color: #563487;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .btn {
+            background: #563487;
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background: #563487;
+            color: white;
+        }
+
+        .progress {
+            height: 15px;
+            background: #ddd;
+            border-radius: 10px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .bar {
+            height: 100%;
+            width: 82%;
+            background: #7650a8;
+        }
+
+        footer {
+            background: #38205d;
+            color: white;
+            text-align: center;
+            padding: 16px;
+            margin-top: 30px;
+        }
+
+        @media(max-width: 600px) {
+            main { padding: 12px; }
+            nav button { padding: 9px; }
+            table { font-size: 12px; }
+            th, td { padding: 7px; }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Computer Lab Inverter Management System</h1>
+    <p>Monitor and Manage Power Backup</p>
+</header>
+
+<nav>
+    <button onclick="showPage('dashboard')">Dashboard</button>
+    <button onclick="showPage('events')">Power Events</button>
+    <button onclick="showPage('records')">Battery Records</button>
+    <button onclick="showPage('maintenance')">Maintenance</button>
+    <button onclick="showPage('about')">About Project</button>
+</nav>
+
+<main>
+
+<section id="dashboard" class="page active">
+    <h2>Dashboard</h2>
+
+    <div class="cards">
+        <div class="card">
+            <h3>Power Status</h3>
+            <div class="value">ON</div>
+        </div>
+
+        <div class="card">
+            <h3>Inverter Status</h3>
+            <div class="value">ONLINE</div>
+        </div>
+
+        <div class="card">
+            <h3>Battery Level</h3>
+            <div class="value" id="batteryDisplay">82%</div>
+        </div>
+
+        <div class="card">
+            <h3>Backup Time</h3>
+            <div class="value" id="backupDisplay">3h 25m</div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <h3>Battery Performance</h3>
+        <div class="progress">
+            <div class="bar" id="batteryBar"></div>
+        </div>
+        <p>Battery level is displayed using sample data.</p>
+    </div>
+</section>
+
+<section id="events" class="page">
+    <div class="panel">
+        <h2>Power Failure & Recovery Events</h2>
+
+        <form id="eventForm">
+            <input type="date" id="eventDate" required>
+            <select id="eventType">
+                <option>Power Failure</option>
+                <option>Power Restored</option>
+            </select>
+            <input type="time" id="eventTime" required>
+            <button class="btn" type="submit">Add Event</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Event</th>
+                    <th>Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="eventTable"></tbody>
+        </table>
+    </div>
+</section>
+
+<section id="records" class="page">
+    <div class="panel">
+        <h2>Inverter & Battery Records</h2>
+
+        <form id="recordForm">
+            <label>Battery Level (%)</label>
+            <input type="number" id="batteryInput"
+                   min="0" max="100" value="82" required>
+
+            <label>Backup Time</label>
+            <input type="text" id="backupInput"
+                   value="3h 25m" required>
+
+            <button class="btn" type="submit">
+                Update Records
+            </button>
+        </form>
+
+        <p id="recordMessage"></p>
+    </div>
+</section>
+
+<section id="maintenance" class="page">
+    <div class="panel">
+        <h2>Maintenance Records</h2>
+
+        <form id="maintenanceForm">
+            <label>Date</label>
+            <input type="date" id="maintDate" required>
+
+            <label>Maintenance Task</label>
+            <input type="text" id="maintTask"
+                   placeholder="Enter maintenance task" required>
+
+            <label>Notes</label>
+            <textarea id="maintNote"
+                      placeholder="Enter maintenance notes"></textarea>
+
+            <button class="btn" type="submit">
+                Add Maintenance Record
+            </button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Task</th>
+                    <th>Notes</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="maintTable"></tbody>
+        </table>
+    </div>
+</section>
+
+<section id="about" class="page">
+    <div class="panel">
+        <h2>About Project</h2>
+
+        <p>
+            Computer Lab Inverter Management System is designed
+            to manage inverter and battery backup information
+            in a computer laboratory.
+        </p>
+
+        <br>
+        <h3>Objectives</h3>
+        <ul>
+            <li>Monitor battery backup information.</li>
+            <li>Maintain power failure records.</li>
+            <li>Store maintenance details.</li>
+            <li>Display inverter status.</li>
+            <li>Reduce manual record keeping.</li>
+        </ul>
+
+        <br>
+        <h3>Technologies Used</h3>
+        <p>HTML, CSS and JavaScript</p>
+    </div>
+</section>
+
+</main>
+
+<footer>
+    <p>Computer Lab Inverter Management System</p>
+</footer>
+
+<script>
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(page => {
+            page.classList.remove('active');
+        });
+
+        document.getElementById(pageId).classList.add('active');
+    }
+
+    const today = new Date().toISOString().slice(0, 10);
+    document.getElementById('maintDate').value = today;
+    document.getElementById('eventDate').value = today;
+
+    let maintenance = JSON.parse(
+        localStorage.getItem('maintenanceRecords') || '[]'
+    );
+
+    let events = JSON.parse(
+        localStorage.getItem('powerEvents') || '[]'
+    );
+
+    let battery = Number(
+        localStorage.getItem('batteryLevel') || 82
+    );
+
+    let backup = localStorage.getItem('backupTime') || '3h 25m';
+
+    function escapeHTML(value) {
+        return String(value).replace(/[&<>"']/g, ch => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+        }[ch]));
+    }
+
+    function displayMaintenance() {
+        const table = document.getElementById('maintTable');
+
+        if (maintenance.length === 0) {
+            table.innerHTML =
+                '<tr><td colspan="4">No maintenance records found.</td></tr>';
+            return;
+        }
+
+        table.innerHTML = maintenance.map((item, index) => `
+            <tr>
+                <td>${escapeHTML(item.date)}</td>
+                <td>${escapeHTML(item.task)}</td>
+                <td>${escapeHTML(item.note || '-')}</td>
+                <td>
+                    <button class="btn"
+                        onclick="deleteMaintenance(${index})">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    document.getElementById('maintenanceForm')
+        .addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            maintenance.unshift({
+                date: document.getElementById('maintDate').value,
+                task: document.getElementById('maintTask').value.trim(),
+                note: document.getElementById('maintNote').value.trim()
+            });
+
+            localStorage.setItem(
+                'maintenanceRecords',
+                JSON.stringify(maintenance)
+            );
+
+            displayMaintenance();
+            this.reset();
+            document.getElementById('maintDate').value = today;
+
+            alert('Maintenance record saved successfully!');
+        });
+
+    function deleteMaintenance(index) {
+        if (!confirm('Delete this maintenance record?')) return;
+
+        maintenance.splice(index, 1);
+
+        localStorage.setItem(
+            'maintenanceRecords',
+            JSON.stringify(maintenance)
+        );
+
+        displayMaintenance();
+    }
+
+    function displayEvents() {
+        const table = document.getElementById('eventTable');
+
+        if (events.length === 0) {
+            table.innerHTML =
+                '<tr><td colspan="4">No power events found.</td></tr>';
+            return;
+        }
+
+        table.innerHTML = events.map((item, index) => `
+            <tr>
+                <td>${escapeHTML(item.date)}</td>
+                <td>${escapeHTML(item.type)}</td>
+                <td>${escapeHTML(item.time)}</td>
+                <td>
+                    <button class="btn"
+                        onclick="deleteEvent(${index})">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    document.getElementById('eventForm')
+        .addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            events.unshift({
+                date: document.getElementById('eventDate').value,
+                type: document.getElementById('eventType').value,
+                time: document.getElementById('eventTime').value
+            });
+
+            localStorage.setItem('powerEvents', JSON.stringify(events));
+            displayEvents();
+            this.reset();
+            document.getElementById('eventDate').value = today;
+        });
+
+    function deleteEvent(index) {
+        if (!confirm('Delete this power event?')) return;
+
+        events.splice(index, 1);
+        localStorage.setItem('powerEvents', JSON.stringify(events));
+        displayEvents();
+    }
+
+    function updateBattery() {
+        document.getElementById('batteryDisplay').textContent =
+            battery + '%';
+
+        document.getElementById('batteryBar').style.width =
+            battery + '%';
+
+        document.getElementById('backupDisplay').textContent = backup;
+
+        document.getElementById('batteryInput').value = battery;
+        document.getElementById('backupInput').value = backup;
+    }
+
+    document.getElementById('recordForm')
+        .addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            battery = Number(
+                document.getElementById('batteryInput').value
+            );
+
+            backup = document.getElementById('backupInput').value.trim();
+
+            if (battery < 0 || battery > 100 || !backup) {
+                alert('Please enter valid battery details.');
+                return;
+            }
+
+            localStorage.setItem('batteryLevel', battery);
+            localStorage.setItem('backupTime', backup);
+
+            updateBattery();
+
+            document.getElementById('recordMessage').textContent =
+                'Records updated successfully!';
+        });
+
+    displayMaintenance();
+    displayEvents();
+    updateBattery();
+</script>
+
+</body>
+</html>
